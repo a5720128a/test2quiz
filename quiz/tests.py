@@ -1,6 +1,6 @@
 from django.urls import resolve
 from django.test import TestCase
-from quiz.models import Quiz, Question
+from quiz.models import Quiz, Question, User
 
 # Create your tests here.
 
@@ -39,3 +39,33 @@ class QuizAndQuestionModelsTest(TestCase):
         self.assertEqual(first_saved_question.quiz, quiz_)
         self.assertEqual(second_saved_question.question_text, 'Question the second')
         self.assertEqual(second_saved_question.quiz, quiz_)
+
+class QuizAndUserModelsTest(TestCase):
+
+    def test_saving_and_retrieving_users(self):
+
+        quiz_ = Quiz()
+        quiz_.save()
+
+        first_user = User()
+        first_user.user_text = 'The first (ever) quiz user'
+        first_user.quiz2 = quiz_
+        first_user.save()
+
+        second_user = User()
+        second_user.user_text = 'user the second'
+        second_user.quiz2 = quiz_
+        second_user.save()
+
+        saved_quiz = Quiz.objects.first()
+        self.assertEqual(saved_quiz, quiz_)
+
+        saved_users = User.objects.all()
+        self.assertEqual(saved_users.count(), 2)
+
+        first_saved_user = saved_users[0]
+        second_saved_user = saved_users[1]
+        self.assertEqual(first_saved_user.user_text, 'The first (ever) quiz user')
+        self.assertEqual(first_saved_user.quiz2, quiz_)
+        self.assertEqual(second_saved_user.user_text, 'user the second')
+        self.assertEqual(second_saved_user.quiz2, quiz_)

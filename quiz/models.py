@@ -6,8 +6,6 @@ from django.utils import timezone
 
 class Quiz(models.Model):
     quiz_text = models.CharField(max_length=200)
-    user_text = models.CharField(max_length=200)
-    user_point = models.IntegerField(default=0)
     def __str__(self):
         return self.quiz_text
 
@@ -20,5 +18,12 @@ class Question(models.Model):
     points_incorrect = models.IntegerField(default=0)
     def __str__(self):
         return self.question_text
+
+class User(models.Model):
+    quiz2 = models.ForeignKey(Quiz, on_delete=models.CASCADE)
+    user_text = models.CharField(max_length=200)
+    user_point = models.IntegerField(default=0)
+    def __str__(self):
+        return self.user_text
 
     
