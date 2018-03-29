@@ -4,5 +4,10 @@
     </head>
     <body>
         <h1>quiz</h1>
+        <table id="id_quiz_table">
+            {% for quiz_text in quiz %}  
+              <tr><td>{{ forloop.counter }}: <a href="{% url 'quiz:detail' quiz_text.id %}" id="quiz {{ forloop.counter }}">{{ quiz_text }}</a></td></tr>
+            {% endfor %}
+	    </table>
     </body>
 </html>
