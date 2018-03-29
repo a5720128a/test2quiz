@@ -21,6 +21,9 @@ class NewVisitorTest(unittest.TestCase):
         header_text = self.browser.find_element_by_tag_name('h1').text  
         self.assertIn('quiz', header_text)
         # Kan enter the first quiz in webapp.
+        fisrt_quiz = self.browser.find_element_by_id('quiz 1')
+        fisrt_quiz.send_keys('enter')
+        
         self.fail('Finish the test!')
         # Kan choose first checkblock as true.
 
