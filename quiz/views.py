@@ -9,14 +9,16 @@ from quiz.models import Quiz, Question, User
 
 def home_page(request):
     quiz_ = Quiz.objects.all
-    return render(request, 'home.html', {'quiz': quiz_})
+    d_message = ""
+    return render(request, 'home.html', {'quiz': quiz_, 'd_message': d_message})
 
 def detail(request, quiz_id):
+    d_message = ""
     try:
         quiz = Quiz.objects.get(pk=quiz_id)
     except Quiz.DoesNotExist:
         raise Http404("Quiz does not exist")
-    return render(request, 'detail.html', {'quiz': quiz})
+    return render(request, 'detail.html', {'quiz': quiz, 'd_message': d_message})
 
 def add_quiz(request):
     d_message = ""
@@ -28,12 +30,24 @@ def add_quiz(request):
         quiz_ = Quiz.objects.create(quiz_text = request.POST['quiz_input'])
         return redirect('/')
     else :
-        d_message = "duplicate quiz name or empty ,please fill another quiz name."
+        d_message = "duplicate or null quiz, please enter new quiz."
         return render(request, 'home.html', {'quizs': quizs, 'd_message': d_message})
 
+def add_question(request, quiz_id):
+    quiz_ = Quiz.objects.get(id=quiz_id)
+    question_reference = str(request.POST['question_input'])
+    # query for duplicate question
+    d_query = Question.objects.filter(question_text=question_reference, quiz=quiz_)
+    if (not d_query) and (question_reference != '') :
+        question_ = Question.objects.create(question_text=request.POST['question_input'], correct_answer = 0, points_correct = 0, points_incorrect = 0, quiz=quiz_)
+        return redirect('/%d/' % (quiz_.id,))
+    else :
+        d_message = "duplicate or null question, please enter new question."
+        return render(request, 'detail.html', {'quiz': quiz_, 'd_message': d_message})
 
-'''
 def submit(request, quiz_id):
+    pass
+'''
     quiz = get_object_or_404(Quiz, pk=quiz_id)
     try:
         selected_choice = quiz.question_set.get(pk=request.POST['choice'])
@@ -48,7 +62,7 @@ def submit(request, quiz_id):
     else:
         if selected_choice = correct_answer
             User.user_point += 1
-            user.save()
+            User.save()
         # Always return an HttpResponseRedirect after successfully dealing
         # with POST data. This prevents data from being posted twice if a
         # user hits the Back button.

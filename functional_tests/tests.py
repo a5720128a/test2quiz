@@ -51,9 +51,22 @@ class NewVisitorTest(LiveServerTestCase):
         inputbox.send_keys(Keys.ENTER)  
         self.check_for_row_in_list_table('1: maner')
         
-        # Kan enter the first quiz in webapp.
-        fisrt_quiz = self.browser.find_element_by_id('quiz 1')
-        fisrt_quiz.send_keys('enter')
+        # Kan enter the first quiz in webapp. 
+        url_table = self.browser.find_element_by_id('id_quiz_table')  
+        url = url_table.find_element_by_link_text('maner')
+        url.send_keys(Keys.ENTER)
+        
+        # Kan add the question "กินมูมมาม" to quiz
+        # "กินมูมมาม" as an item in a quiz list table
+        time.sleep(1)
+        inputbox2 = self.browser.find_element_by_id('id_new_question')
+        inputbox2.send_keys('กินมูมมาม')
+        inputbox2.send_keys(Keys.ENTER)
+        time.sleep(1)
+        question_text_ = self.browser.find_element_by_id('question 1')
+        self.assertEqual(question_text_.text,'กินมูมมาม')
+
+        # Kan found
         
         # Kan choose first checkblock as true.
 

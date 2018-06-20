@@ -1,5 +1,6 @@
 from django.urls import resolve
 from django.test import TestCase
+from django.http import HttpRequest
 from quiz.models import Quiz, Question, User
 
 # Create your tests here.
@@ -104,3 +105,31 @@ class NewQuizTest(TestCase):
         
         self.assertEqual(response.status_code, 302)
         self.assertEqual(response['location'], '/')
+
+class NewQuestionTest(TestCase):
+    
+    def test_can_save_a_POST_question_request_to_an_quiz(self):
+        other_quiz = Quiz.objects.create()
+        correct_quiz = Quiz.objects.create()
+
+        self.client.post(
+            '/%d/add_question' % (correct_quiz.id,),
+            data={'question_input': 'A new question for an quiz'}
+        )
+
+        self.assertEqual(Question.objects.count(), 1)
+        new_question = Question.objects.first()
+        self.assertEqual(new_question.question_text, 'A new question for an quiz')
+        self.assertEqual(new_question.quiz, correct_quiz)
+
+
+    def test_redirects_to_quiz_view(self):
+        other_quiz = Quiz.objects.create()
+        correct_quiz = Quiz.objects.create()
+
+        response = self.client.post(
+            '/%d/add_question' % (correct_quiz.id,),
+            data={'question_input': 'A new question for an quiz'}
+        )
+
+        self.assertRedirects(response, '/%d/' % (correct_quiz.id,))
