@@ -22,7 +22,7 @@ def detail(request, quiz_id):
 
 def add_quiz(request):
     d_message = ""
-    quizs = Quiz.objects.order_by('-date_pub')[:5]
+    quizs = Quiz.objects.all
     quiz_reference = str(request.POST['quiz_input'])
     # query for duplicate quiz
     d_query = Quiz.objects.filter(quiz_text=quiz_reference)
@@ -36,35 +36,45 @@ def add_quiz(request):
 def add_question(request, quiz_id):
     quiz_ = Quiz.objects.get(id=quiz_id)
     question_reference = str(request.POST['question_input'])
+    correct_answer_reference = str(request.POST['correct_input'])
     # query for duplicate question
     d_query = Question.objects.filter(question_text=question_reference, quiz=quiz_)
     if (not d_query) and (question_reference != '') :
-        question_ = Question.objects.create(question_text=request.POST['question_input'], correct_answer = 0, points_correct = 0, points_incorrect = 0, quiz=quiz_)
+        question_ = Question.objects.create(question_text=request.POST['question_input'], correct_answer = correct_answer_reference, points_correct = 0, points_incorrect = 0, quiz=quiz_)
         return redirect('/%d/' % (quiz_.id,))
     else :
         d_message = "duplicate or null question, please enter new question."
         return render(request, 'detail.html', {'quiz': quiz_, 'd_message': d_message})
 
 def submit(request, quiz_id):
-    pass
-'''
+    d_message = ""
+    quiz_ = Quiz.objects.get(id=quiz_id)
     quiz = get_object_or_404(Quiz, pk=quiz_id)
-    try:
-        selected_choice = quiz.question_set.get(pk=request.POST['choice'])
-        # correct_answer 1 = true correct , 2 = false correct
-        correct_answer = quiz.question_set.get(pk=correct_answer)
-    except (KeyError, Choice.DoesNotExist):
-        # Redisplay the quiz voting form.
-        return render(request, 'detail.html', {
-            'quiz': quiz,
-            'error_message': "You didn't select a choice.",
-        })
-    else:
-        if selected_choice = correct_answer
-            User.user_point += 1
-            User.save()
-        # Always return an HttpResponseRedirect after successfully dealing
-        # with POST data. This prevents data from being posted twice if a
-        # user hits the Back button.
-        return HttpResponseRedirect(reverse('quiz:results', args=(quiz.id,)))
-'''
+    question_amount = Question.objects.filter(quiz=quiz_).count()+1
+    stat = []
+    point = 0
+    for i in range(1,question_amount):
+        try:
+            selected_choice = str(request.POST['choice '+str(i)]).split(':')
+            selected_choice_value = selected_choice[0]
+            question_id = selected_choice[1]
+            question_ = Question.objects.get(id=question_id)
+            # correct_answer 1 = true correct , 2 = false correct
+            correct_answer = Question.objects.get(pk=question_id).correct_answer
+            if str(selected_choice_value) == str(correct_answer) :
+                point = point+1
+                stat.append(question_id)
+                question_.points_correct = question_.points_correct+1
+                question_.save()
+            else :
+                question_.points_incorrect = question_.points_incorrect+1
+                question_.save()
+        except :
+            pass
+    all_stat = ':'.join(map(str, stat))
+    print(stat)
+    user_reference = str(request.POST['user_input'])
+    user_ = User.objects.create(user_text = user_reference, user_point=point, stat=all_stat, quiz2 = quiz_)
+    
+    return render(request, 'result.html', {'quiz': quiz, 'stat': stat, 'user_reference': user_reference, 'point': point})
+

@@ -114,7 +114,7 @@ class NewQuestionTest(TestCase):
 
         self.client.post(
             '/%d/add_question' % (correct_quiz.id,),
-            data={'question_input': 'A new question for an quiz'}
+            data={'question_input': 'A new question for an quiz', 'correct_input': '1'}
         )
 
         self.assertEqual(Question.objects.count(), 1)
@@ -129,7 +129,24 @@ class NewQuestionTest(TestCase):
 
         response = self.client.post(
             '/%d/add_question' % (correct_quiz.id,),
-            data={'question_input': 'A new question for an quiz'}
+            data={'question_input': 'A new question for an quiz', 'correct_input': '1'}
         )
 
         self.assertRedirects(response, '/%d/' % (correct_quiz.id,))
+
+class SubmitTest(TestCase):
+    
+    def test_render_after_submit(self):
+        quiz_ = Quiz()
+        quiz_.save()
+        
+        user_ = User()
+        user_.user_text = 'test'
+        user_.user_point += 1
+        user_.quiz2 = quiz_
+        user_.save()
+
+        response = self.client.post(
+            '/%d/submit' % (quiz_.id,),
+            data={'user_input': 'A new user'}
+        )

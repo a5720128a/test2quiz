@@ -56,25 +56,56 @@ class NewVisitorTest(LiveServerTestCase):
         url = url_table.find_element_by_link_text('maner')
         url.send_keys(Keys.ENTER)
         
-        # Kan add the question "กินมูมมาม" to quiz
-        # "กินมูมมาม" as an item in a quiz list table
+        # Kan add the question "กินเรียบร้อย" to "maner" quiz
+        # "กินเรียบร้อย" as an item in a quiz list table
         time.sleep(1)
         inputbox2 = self.browser.find_element_by_id('id_new_question')
-        inputbox2.send_keys('กินมูมมาม')
+        inputbox2.send_keys('กินเรียบร้อย')
         inputbox2.send_keys(Keys.ENTER)
         time.sleep(1)
         question_text_ = self.browser.find_element_by_id('question 1')
-        self.assertEqual(question_text_.text,'กินมูมมาม')
-
-        # Kan found
+        self.assertEqual(question_text_.text,'กินเรียบร้อย')
         
-        # Kan choose first checkblock as true.
+        # Kan add second question "รวบช้อนส้อมหลังกินเสร็จ"
 
-        # Kan choose 2 other checkblock as false.
-
-        # Kan click submit.
+        # "รวบช้อนส้อมหลังกินเสร็จ" as an item in a quiz list table
+        time.sleep(1)
+        inputbox2 = self.browser.find_element_by_id('id_new_question')
+        inputbox2.send_keys('รวบช้อนส้อมหลังกินเสร็จ')
+        inputbox2.send_keys(Keys.ENTER)
+        time.sleep(1)
+        question_text_ = self.browser.find_element_by_id('question 2')
+        self.assertEqual(question_text_.text,'รวบช้อนส้อมหลังกินเสร็จ')
         
-        # Kan has 2 point on result page.
+        # Kan choose first question checkblock as true.
+        checkbox = self.browser.find_element_by_xpath(".//input[@type='radio' and @value='1']").click
 
+        # Kan choose second checkblock as true.
+        checkbox2 = self.browser.find_element_by_xpath(".//input[@type='radio' and @value='1']").click
+
+        # Kan fill his name in user name text box "Kan"
+        # Kan submit.
+        inputbox3 = self.browser.find_element_by_id('id_new_user')
+        inputbox3.send_keys('Kan')
+        inputbox3.send_keys(Keys.ENTER)
+        
+        time.sleep(1)
+
+        # Kan see global stat, got 2 point, see all correct,  on result page.
+        global_stat1 = self.browser.find_element_by_id('stat 1').text
+        self.assertIn('กินเรียบร้อย -- true correct    global stats   correct 1  incorrect 0', global_stat1)
+
+        global_stat2 = self.browser.find_element_by_id('stat 2').text
+        self.assertIn('รวบช้อนส้อมหลังกินเสร็จ -- true correct    global stats   correct 1  incorrect 0', global_stat2)
+
+        correct1 = self.browser.find_element_by_id('point 1').text
+        self.assertIn('1 : กินเรียบร้อย --> correct', correct1)
+        correct2 = self.browser.find_element_by_id('point 2').text
+        self.assertIn('2 : รวบช้อนส้อมหลังกินเสร็จ --> correct', correct2)
+        kan_point = self.browser.find_element_by_id('result_point').text
+        self.assertIn('your point = 2', kan_point)
+        
+        # Kan close browser and turn off pc then go to sleep.
+        
 if __name__ == '__main__':
     unittest.main(warnings='ignore')

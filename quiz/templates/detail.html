@@ -5,29 +5,36 @@
     <body>
         <h1>{{ quiz.quiz_text }}</h1>
 
+        {% if error_message %}<p><strong>{{ error_message }}</strong></p>{% endif %}
+
         <h4>{{ d_message }}</h4>
         <form method="POST" id="form_add_question" action="/{{ quiz.id }}/add_question">
             <input name="question_input" id="id_new_question" placeholder="Add question" />
+            <input type="radio" name="correct_input" value="1" checked> true
+            <input type="radio" name="correct_input" value="2"> false
             {% csrf_token %}
         </form>
         <button type="submit" form="form_add_question" value="Submit">Submit</button>
         <br><br>
 
+        <h4>default = true change your choice if you not agree</h4>
+
         {% if error_message %}<p><strong>{{ error_message }}</strong></p>{% endif %}
-        <form method="post">
+        <form method="post" id="form_for_quiz" action="/{{ quiz.id }}/submit">
         {% csrf_token %}
         {% for question in quiz.question_set.all %}
         <h2 id="question {{ forloop.counter }}">{{ question.question_text }}</h2>
-            <input type="radio" name="choice" id="choice {{ forloop.counter }}" value="1" />
+            <input type="radio" name="choice {{ forloop.counter }}" id="choice {{ forloop.counter }}" value="1:{{ question.id }}" checked/>
             <label for="choice {{ forloop.counter }}"> true </label><br />
-            <input type="radio" name="choice" id="choice {{ forloop.counter }}" value="2" />
+            <input type="radio" name="choice {{ forloop.counter }}" id="choice {{ forloop.counter }}" value="2:{{ question.id }}" />
             <label for="choice {{ forloop.counter }}"> false </label><br />
         {% endfor %}
         <br><br>
         {% if quiz.question_set.count != 0 %}
-        <input type="submit" value="Submit" /><br><br>
+        <input name="user_input" id="id_new_user" placeholder="type your name" /><br><br>
+        <button type="submit" form="form_for_quiz" value="Submit">Submit</button><br><br>
         {% endif %}
-        <a href="{% url 'quiz:home' %}">HOME</a>
         </form>
+        <a href="{% url 'quiz:home' %}">HOME</a>
     </body>
 </html>

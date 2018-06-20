@@ -23,6 +23,7 @@ class User(models.Model):
     quiz2 = models.ForeignKey(Quiz, on_delete=models.CASCADE)
     user_text = models.CharField(max_length=200)
     user_point = models.IntegerField(default=0)
+    stat = models.CharField(max_length=200, default=0)
     def __str__(self):
         return self.user_text
 
