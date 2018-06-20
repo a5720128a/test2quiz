@@ -1,0 +1,14 @@
+<h1>{{ quiz.quiz_text }}</h1>
+
+{% if error_message %}<p><strong>{{ error_message }}</strong></p>{% endif %}
+<form method="post">
+{% csrf_token %}
+{% for question in quiz.question_set.all %}
+<h2>{{ question.question_text }}</h2>
+    <input type="radio" name="choice" id="choice {{ forloop.counter }}" value="1" />
+    <label for="choice {{ forloop.counter }}"> true </label><br />
+    <input type="radio" name="choice" id="choice {{ forloop.counter }}" value="2" />
+    <label for="choice {{ forloop.counter }}"> false </label><br />
+{% endfor %}
+<input type="submit" value="Submit" />
+</form>

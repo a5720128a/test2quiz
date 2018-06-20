@@ -3,7 +3,16 @@
         <title>quiz</title>
     </head>
     <body>
+        <br>
         <h1>quiz</h1>
+        <h4>{{ d_message }}</h4>
+
+        <form method="POST" id="form_add_quiz" action="/add_quiz">
+            <input name="quiz_input" id="id_new_quiz" placeholder="Add new quiz" />
+            {% csrf_token %}
+        </form>
+        <button type="submit" form="form_add_quiz" value="Submit">Submit</button>
+        <br><br>
         <table id="id_quiz_table">
             {% for quiz_text in quiz %}  
               <tr><td>{{ forloop.counter }}: <a href="{% url 'quiz:detail' quiz_text.id %}" id="quiz {{ forloop.counter }}">{{ quiz_text }}</a></td></tr>

@@ -10,6 +10,25 @@ class HomePageTest(TestCase):
         response = self.client.get('/')
         self.assertTemplateUsed(response, 'home.html')
 
+    def test_home_page_returns_correct_html(self):
+        response = self.client.get('/')  
+
+        html = response.content.decode('utf8')  
+        self.assertTrue(html.startswith('<html>'))
+        self.assertIn('<title>quiz</title>', html)
+        self.assertTrue(html.strip().endswith('</html>'))
+
+        self.assertTemplateUsed(response, 'home.html')
+
+    def test_displays_all_list_quiz(self):
+        Quiz.objects.create(quiz_text='wordey 1')
+        Quiz.objects.create(quiz_text='wordey 2')
+
+        response = self.client.get('/')
+
+        self.assertIn('wordey 1', response.content.decode())
+        self.assertIn('wordey 2', response.content.decode())
+
 class QuizAndQuestionModelsTest(TestCase):
 
     def test_saving_and_retrieving_questions(self):
@@ -69,3 +88,19 @@ class QuizAndUserModelsTest(TestCase):
         self.assertEqual(first_saved_user.quiz2, quiz_)
         self.assertEqual(second_saved_user.user_text, 'user the second')
         self.assertEqual(second_saved_user.quiz2, quiz_)
+
+class NewQuizTest(TestCase):
+    
+    def test_can_save_a_POST_request(self):
+        self.client.post('/add_quiz', data={'quiz_input': 'A new list quiz'})
+
+        self.assertEqual(Quiz.objects.count(), 1)
+        new_quiz = Quiz.objects.first()
+        self.assertEqual(new_quiz.quiz_text, 'A new list quiz')
+
+
+    def test_redirects_after_POST(self):
+        response = self.client.post('/add_quiz', data={'quiz_input': 'A new list quiz'})
+        
+        self.assertEqual(response.status_code, 302)
+        self.assertEqual(response['location'], '/')
